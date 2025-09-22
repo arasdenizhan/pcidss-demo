@@ -1,0 +1,13 @@
+package io.github.arasdenizhan.payment.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class PaymentDemoApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
