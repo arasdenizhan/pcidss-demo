@@ -19,11 +19,24 @@ const AuthProvider: FC<AuthProviderComponentProps> = ({ children }) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
+      credentials: "include",
     });
 
     if (!res.ok) {
       const messageWrapper = await res.json();
       throw new Error("Login failed, reason = " + messageWrapper.message);
+    }
+  };
+
+  const info = async () => {
+    const res = await fetch(AppUrl + AuthApiUrl, {
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      setUser(null);
+      throw new Error("User is not authenticated, login to continue.");
     }
     const responseJson = await res.json();
     console.log("responseJson:", responseJson);
@@ -32,15 +45,14 @@ const AuthProvider: FC<AuthProviderComponentProps> = ({ children }) => {
 
   const logout = async () => {
     await fetch(AppUrl + AuthApiUrl + "/logout", {
-      referrerPolicy: "unsafe-url",
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
     });
-    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, info, logout }}>
       {children}
     </AuthContext.Provider>
   );

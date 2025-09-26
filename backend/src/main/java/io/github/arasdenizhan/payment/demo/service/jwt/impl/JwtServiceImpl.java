@@ -34,6 +34,8 @@ public class JwtServiceImpl implements JwtService {
     private final JwtProperties jwtProperties;
     private final Clock clock;
 
+    public static final String JWT_COOKIE_NAME = "jwt";
+
     @Override
     public String generate(UserDetails userDetails) {
         Date date = Date.from(Instant.now(clock));

@@ -13,14 +13,18 @@ import {
 } from "@mui/material";
 import { useAuth } from "./Auth";
 import PaymentCard from "./PaymentCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
-  const { user, login, logout } = useAuth();
+  const { user, login, info, logout } = useAuth();
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    getInfo(); // eslint-disable-next-line
+  }, []);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log("login submitted!");
     const data = new FormData(event.currentTarget);
@@ -30,9 +34,33 @@ function App() {
       handleError("Username or password is missing!");
       return;
     }
-    login(username, password)
+    await login(username, password)
       .then((res) => {
-        console.log(res);
+        console.log("login successfull!");
+        getInfo();
+      })
+      .catch((err) => {
+        handleError(err.message);
+        return;
+      });
+  };
+
+  const getInfo = async () => {
+    await info()
+      .then((res) => {
+        console.log("fetch info successfull!");
+      })
+      .catch((err) => {
+        handleError(err.message);
+        return;
+      });
+  };
+
+  const handleLgout = async () => {
+    await logout()
+      .then((res) => {
+        console.log("logout successfull!");
+        getInfo();
       })
       .catch((err) => {
         handleError(err.message);
@@ -117,7 +145,20 @@ function App() {
       </Grid>
     );
   } else {
-    return <PaymentCard />;
+    return (
+      <Box textAlign="center" width={750} sx={{ margin: "auto" }}>
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ m: 1 }}
+          onClick={handleLgout}
+        >
+          Logout
+        </Button>
+        <PaymentCard />
+      </Box>
+    );
   }
 }
 
