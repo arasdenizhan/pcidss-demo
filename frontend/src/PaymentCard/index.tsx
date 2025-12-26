@@ -45,7 +45,7 @@ function PaymentCard() {
     setFocus("number");
     const onlyNums = event.target.value.replace(/\D/g, "");
     setNumber(onlyNums);
-    setNumberError(onlyNums.length != 16);
+    setNumberError(onlyNums.length !== 16);
   }
 
   function onChangeName(

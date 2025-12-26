@@ -5,6 +5,7 @@ import io.github.arasdenizhan.payment.demo.dto.payment.CardPaymentDto;
 import io.github.arasdenizhan.payment.demo.service.encryption.EncryptionService;
 import io.github.arasdenizhan.payment.demo.service.idempotency.IdempotencyService;
 import io.github.arasdenizhan.payment.demo.service.payment.PaymentService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class PaymentController {
 
     @PostMapping("/card")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional
     ResponseEntity<Void> cardPayment(@Valid @NotBlank @RequestHeader(value = "Idempotency-Key") String idempotencyKey,
                                      @Valid @RequestBody CardPaymentDto cardPaymentDto){
         idempotencyService.checkKey(idempotencyKey, PaymentType.CARD);
