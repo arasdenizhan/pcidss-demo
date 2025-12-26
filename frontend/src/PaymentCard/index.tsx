@@ -10,6 +10,7 @@ import { Focused } from "react-credit-cards";
 import { v4 as uuidv4 } from "uuid";
 import PaymentSuccess from "../PaymentSuccess";
 import PaymentFailed from "../PaymetFailed";
+import { PaymentFailedMessage } from "../PaymetFailed/types";
 
 function PaymentCard() {
   const AppUrl = process.env["REACT_APP_API_URL"]
@@ -30,7 +31,13 @@ function PaymentCard() {
   const [paymentForm, setPaymentForm] = useState(true);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(new PaymentFailedMessage());
+
+  const [numberError, setNumberError] = useState(false);
+  const [nameError, setNameError] = useState(false);
+  const [monthError, setMonthError] = useState(false);
+  const [yearError, setYearError] = useState(false);
+  const [cvcError, setCvcError] = useState(false);
 
   function onChangeCardNumber(
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -38,6 +45,7 @@ function PaymentCard() {
     setFocus("number");
     const onlyNums = event.target.value.replace(/\D/g, "");
     setNumber(onlyNums);
+    setNumberError(onlyNums.length != 16);
   }
 
   function onChangeName(
@@ -46,6 +54,11 @@ function PaymentCard() {
     setFocus("name");
     const onlyLetters = event.target.value.replace(/[^a-z ]/g, "");
     setName(onlyLetters);
+    if (!onlyLetters) {
+      setNameError(true);
+    } else {
+      setNameError(false);
+    }
   }
 
   function onChangeCVC(
@@ -54,6 +67,7 @@ function PaymentCard() {
     setFocus("cvc");
     const onlyNums = event.target.value.replace(/\D/g, "");
     setCvc(onlyNums);
+    setCvcError(Number(onlyNums) < 100 || Number(onlyNums) > 999);
   }
 
   function onChangeMonth(
@@ -62,6 +76,7 @@ function PaymentCard() {
     setFocus("expiry");
     const onlyNums = event.target.value.replace(/\D/g, "");
     setMonth(onlyNums);
+    setMonthError(Number(onlyNums) < 1 || Number(onlyNums) > 12);
   }
 
   function onChangeYear(
@@ -70,6 +85,7 @@ function PaymentCard() {
     setFocus("expiry");
     const onlyNums = event.target.value.replace(/\D/g, "");
     setYear(onlyNums);
+    setYearError(Number(onlyNums) < 25 || Number(onlyNums) > 40);
   }
 
   useEffect(() => {
@@ -98,9 +114,12 @@ function PaymentCard() {
     });
 
     if (!res.ok) {
-      const messageWrapper = await res.json();
-      console.log("Payment failed, reason = " + messageWrapper.message);
-      setErrorMessage(messageWrapper.message);
+      const messageWrapper = Object.assign(
+        new PaymentFailedMessage(),
+        await res.json()
+      );
+      console.log("Payment failed, reason = " + messageWrapper);
+      setErrorMessage(messageWrapper);
       setError(true);
       setPaymentForm(false);
       setTimeout(() => {
@@ -168,8 +187,20 @@ function PaymentCard() {
               />
               <TextField
                 id="outlined-basic"
+                label="Payment Amount"
+                variant="outlined"
+                value={"100"}
+                sx={{ width: "100%" }}
+                disabled={true}
+              />
+              <TextField
+                id="outlined-basic"
                 label="Card Number"
                 variant="outlined"
+                error={numberError}
+                helperText={
+                  numberError ? "Please enter a valid card number" : ""
+                }
                 value={number}
                 slotProps={{
                   input: {
@@ -186,6 +217,8 @@ function PaymentCard() {
               <TextField
                 id="outlined-basic"
                 label="Name"
+                error={nameError}
+                helperText={nameError ? "Please enter a valid name" : ""}
                 value={name}
                 variant="outlined"
                 sx={{ width: "100%" }}
@@ -202,6 +235,8 @@ function PaymentCard() {
                 <TextField
                   label="Month"
                   onChange={onChangeMonth}
+                  error={monthError}
+                  helperText={monthError ? "Please enter a valid month" : ""}
                   value={month}
                   slotProps={{
                     input: {
@@ -217,6 +252,10 @@ function PaymentCard() {
                 <TextField
                   label="Year"
                   onChange={onChangeYear}
+                  error={yearError}
+                  helperText={
+                    yearError ? "Please enter a year between 25-40" : ""
+                  }
                   value={year}
                   slotProps={{
                     input: {
@@ -230,6 +269,8 @@ function PaymentCard() {
                 id="outlined-basic"
                 label="CVC-CVV"
                 variant="outlined"
+                error={cvcError}
+                helperText={cvcError ? "Please enter a valid cvc" : ""}
                 value={cvc}
                 sx={{ width: "100%" }}
                 slotProps={{
@@ -246,6 +287,13 @@ function PaymentCard() {
                 variant="contained"
                 sx={{ width: "100%" }}
                 onClick={makePayment}
+                disabled={
+                  nameError ||
+                  cvcError ||
+                  numberError ||
+                  monthError ||
+                  yearError
+                }
               >
                 Pay Now
               </Button>

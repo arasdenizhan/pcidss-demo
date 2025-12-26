@@ -56,14 +56,14 @@ function App() {
       });
   };
 
-  const handleLgout = async () => {
+  const handleLogout = async () => {
     await logout()
       .then((res) => {
         console.log("logout successfull!");
         getInfo();
       })
       .catch((err) => {
-        handleError(err.message);
+        handleError(err);
         return;
       });
   };
@@ -152,7 +152,7 @@ function App() {
           fullWidth
           variant="contained"
           sx={{ m: 1 }}
-          onClick={handleLgout}
+          onClick={handleLogout}
         >
           Logout
         </Button>

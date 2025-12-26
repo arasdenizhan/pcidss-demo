@@ -10,8 +10,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class PaymentController {
     @PostMapping("/card")
     @PreAuthorize("hasAuthority('USER')")
     ResponseEntity<Void> cardPayment(@Valid @NotBlank @RequestHeader(value = "Idempotency-Key") String idempotencyKey,
-                                     @RequestBody CardPaymentDto cardPaymentDto){
+                                     @Valid @RequestBody CardPaymentDto cardPaymentDto){
         idempotencyService.checkKey(idempotencyKey, PaymentType.CARD);
         encryptionService.encryptCard(cardPaymentDto);
         paymentService.cardPayment(idempotencyKey, cardPaymentDto);
