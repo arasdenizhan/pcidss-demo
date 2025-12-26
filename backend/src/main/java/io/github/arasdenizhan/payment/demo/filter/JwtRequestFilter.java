@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,7 +35,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (checkIfAuthenticationRequest(request, response, filterChain)) return;
-
         final Cookie jwtCookie = getJwtCookie(request);
         if (jwtCookie != null ) {
             Claims payload = jwtService.getClaims(jwtCookie.getValue());
@@ -54,6 +54,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private Cookie getJwtCookie(HttpServletRequest request) {
+        if (request.getCookies() == null || request.getCookies().length == 0) {
+            throw new InvalidCookieException("User is not authenticated, required cookies are missing!");
+        }
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> JWT_COOKIE_NAME.equals(cookie.getName()))
                 .findFirst().orElse(null);

@@ -1,6 +1,11 @@
 - ### Creating keystore for ssh
 ```
-keytool -genkeypair -alias pcidssdemo -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore keystore.p12 -storepass pcidssdemo -keypass pcidssdemo
+keytool -genkeypair -alias pcidssdemo -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore keystore.p12 -storepass pcidssdemo -keypass pcidssdemo -ext "SAN=DNS:localhost,IP:127.0.0.1"
+```
+
+- ### Exporting keystore as crt to add as a trusted certificate
+```
+keytool  -export -alias pcidssdemo -keystore keystore.p12 -file springboot.crt
 ```
 
 - ### Creating private key for JWT Signing

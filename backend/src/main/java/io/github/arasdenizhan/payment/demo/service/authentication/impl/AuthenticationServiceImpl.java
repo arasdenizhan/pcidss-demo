@@ -2,7 +2,6 @@ package io.github.arasdenizhan.payment.demo.service.authentication.impl;
 
 import io.github.arasdenizhan.payment.demo.dto.authentication.AuthenticationDto;
 import io.github.arasdenizhan.payment.demo.dto.authentication.UserDto;
-import io.github.arasdenizhan.payment.demo.exception.LoginFailedException;
 import io.github.arasdenizhan.payment.demo.service.authentication.AuthenticationService;
 import io.github.arasdenizhan.payment.demo.service.jwt.JwtService;
 import io.jsonwebtoken.lang.Strings;
@@ -10,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,12 +43,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .path("/")
                     .maxAge(1800000)
                     .sameSite("None")
-                    //.sameSite("Strict")   // TODO: CSRF OPEN
                     .build();
             httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
             return httpHeaders;
         }
-        throw new LoginFailedException("User credentials are wrong, authentication failed!");
+        throw new BadCredentialsException("User credentials are wrong, authentication failed!");
     }
 
     @Override
@@ -60,7 +59,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .path("/")
                 .maxAge(0)
                 .sameSite("None")
-                //.sameSite("Strict")   // TODO: CSRF OPEN
                 .build();
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookie.toString());
         return httpHeaders;

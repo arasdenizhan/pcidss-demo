@@ -28,7 +28,7 @@ public class AuthenticationController {
         return ResponseEntity.ok().headers(httpHeaders).build();
     }
 
-    @GetMapping
+    @GetMapping("/info")
     @PreAuthorize("hasAnyAuthority('USER', 'DATABASE_ADMIN', 'PAYMENT_ADMIN')")
     ResponseEntity<UserDto> info(){
         return ResponseEntity.ok(authenticationService.info());

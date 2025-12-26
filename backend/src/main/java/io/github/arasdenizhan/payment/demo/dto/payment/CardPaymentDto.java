@@ -14,32 +14,33 @@ import java.math.BigDecimal;
 public class CardPaymentDto {
     @NotBlank
     @Setter
-    @Length(min = 16, max = 16)
+    @Length(min = 16, max = 16, message = "Card number is not valid!")
     private String number;
 
-    @NotBlank
+    @NotBlank(message = "Name can not blank!")
     @Setter
     private String name;
 
-    @NotNull
-    @Max(value = 2040)
+    @NotNull(message = "Year can not blank!")
+    @Min(value = 25, message = "Year can be min 25")
+    @Max(value = 40, message = "Year can be max 40")
     @Setter
     private int year;
 
-    @NotNull
-    @Min(value = 1)
-    @Max(value = 12)
+    @NotNull(message = "Month can not blank!")
+    @Min(value = 1, message = "Month can be min 1")
+    @Max(value = 12, message = "Month can be max 12")
     @Setter
     private int month;
 
-    @NotNull
-    @Min(value = 100)
-    @Max(value = 999)
+    @NotNull(message = "CVC can not blank!")
+    @Min(value = 100, message = "CVC can be min 100")
+    @Max(value = 999, message = "CVC can be max 999")
     @Setter
     private int cvc;
 
-    @Positive
-    @NotNull
+    @Positive(message = "Amount can be positive only!")
+    @NotNull(message = "Amount can not be blank!")
     private BigDecimal amount;
 
     @JsonIgnore
