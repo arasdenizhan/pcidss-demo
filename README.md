@@ -1,4 +1,6 @@
-<img src="screenshots/card-animated.gif" width="400">
+<p align="center">
+    <img src="screenshots/card-animated.gif" width="400">
+</p>
 
 # PCI DSS Demo
 
