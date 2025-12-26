@@ -1,3 +1,5 @@
+<img src="screenshots/card-animated.gif" width="400">
+
 # PCI DSS Demo
 
 **PCI DSS Demo** is a sample payment card application created as part of the *Coding the Standards* Medium article series. The project demonstrates how a payment system can be designed with **PCI DSS (Payment Card Industry Data Security Standard)** considerations in mind.
